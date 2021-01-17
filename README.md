@@ -1,7 +1,5 @@
 ## Ambiente Docker
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
-
 1. Clonar o repositório:
  `git clone https://github.com/nilbertooliveira/flights.git`
 2. Acessar a pasta do projeto "docker" e rodar o comando:
@@ -22,7 +20,6 @@ Pass: Nil#123@
 php artisan migrate
 php artisan passport:install
 ```
-
 
 ## Utilização das APIS
 1. Efetuar o registro do usuário
