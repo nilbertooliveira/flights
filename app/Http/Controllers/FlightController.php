@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Http;
 
 class FlightController extends Controller
@@ -23,6 +24,10 @@ class FlightController extends Controller
      *     @OA\Response(
      *         response=200,
      *         description="Success"
+     *     ),
+     *     @OA\Response(
+     *      response=401,
+     *       description="Unauthenticated"
      *     ),
      *     security={
      *         {"Bearer": {}}
@@ -59,7 +64,7 @@ class FlightController extends Controller
         $flights['cheapestPrice'] = $flights['groups'][array_key_first($flights['groups'])]['totalPrice'];
         $flights['cheapestGroup'] = array_key_first($flights['groups']);
 
-        return response()->json($flights);
+        return response()->json($flights, Response::HTTP_OK);
     }
 
     /**
