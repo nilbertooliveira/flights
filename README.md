@@ -24,7 +24,7 @@ php artisan passport:install
 ```
 
 
-##Utilização das APIS
+## Utilização das APIS
 1. Efetuar o registro do usuário
 2. Logar na api
 3. Usar o token gerado no login e setar no campo superior direito "Authorize" no formato: Bearer {bearer}
