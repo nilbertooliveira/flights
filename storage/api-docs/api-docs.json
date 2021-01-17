@@ -10,7 +10,7 @@
     },
     "servers": [
         {
-            "url": "http://localhost:8080",
+            "url": "http://54.94.198.180:8080",
             "description": "API Server"
         }
     ],
