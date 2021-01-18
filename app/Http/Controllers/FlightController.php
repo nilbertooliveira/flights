@@ -14,7 +14,7 @@ class FlightController extends Controller
     public function __construct()
     {
         $this->url_api_flights = env("URL_API_FLIGHTS");
-        //$this->middleware('auth:api');
+        $this->middleware('auth:api');
     }
     /**
      * @OA\Get(
