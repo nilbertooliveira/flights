@@ -1,7 +1,10 @@
 ## Ambiente Docker
 
 1. Clonar o repositório:
- `git clone https://github.com/nilbertooliveira/flights.git`
+  ```
+ git clone https://github.com/nilbertooliveira/flights.git
+ composer install
+ ```
 2. Acessar a pasta do projeto "docker" e rodar o comando:
 	`docker-compose up -d`
 3. Conectar a uma ferramenta de banco como o "DBeaver" e criar o database com o nome "flights":
