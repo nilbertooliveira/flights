@@ -9,11 +9,12 @@ class FlightController extends Controller
 {
 
     protected $url_api_flights;
+    protected $groups;
 
     public function __construct()
     {
         $this->url_api_flights = env("URL_API_FLIGHTS");
-        $this->middleware('auth:api');
+        //$this->middleware('auth:api');
     }
     /**
      * @OA\Get(
@@ -55,60 +56,64 @@ class FlightController extends Controller
                 $flights['groups'][$f['fare']]['outbound'][] = $f;
             }
         }
-        $flights = $this->orderFlightsByPrice($flights);
+        $groups = $this->groupByPrice($flights);
 
-        $flights = $this->orderByGroups($flights);
+        $this->setReturnGroups($groups, $flights);
 
-        $flights['totalGroups'] = count($flights['groups']);
-        $flights['totalFlights'] = count($flights['flights']);
-        $flights['cheapestPrice'] = $flights['groups'][array_key_first($flights['groups'])]['totalPrice'];
-        $flights['cheapestGroup'] = array_key_first($flights['groups']);
-
-        return response()->json($flights, Response::HTTP_OK);
+        return response()->json($this->groups, Response::HTTP_OK);
     }
 
-    /**
-     * Ordena os voos pelo menor preço
+      /**
+     * Agrupa os voos por preço
      *
      * @param array $flights
      * @return $flights
      */
-    private function orderFlightsByPrice(array $flights)
+    private function groupByPrice(array $flights)
     {
+        $groups = array();
+        $countGroup = 0;
         foreach ($flights['groups'] as $key => $f) {
             $collection = collect($f['inbound']);
-            $sorted = $collection->sortBy(function ($flight, $key) {
-                return $flight['price'];
-            });
 
-            $flights['groups'][$key]['inbound'] = $sorted->all();
+            $inboundGroup = $collection->groupBy('price');
 
             $collection = collect($f['outbound']);
-            $sorted = $collection->sortBy(function ($flight, $key) {
-                return $flight['price'];
-            });
-            $flights['groups'][$key]['outbound'] = $sorted->all();
+            $outboundGroup = $collection->groupBy('price');
 
-            //Para efeito desta api peguei o primeiro voo fixo de ida e retorno
-            $flights['groups'][$key]['totalPrice'] = $f['inbound'][0]['price'] + $f['outbound'][0]['price'];
+            foreach ($inboundGroup as $in) {
+                foreach ($outboundGroup as $out) {
+                    $groups[] = [
+                        'uniqueId' => $countGroup + 1,
+                        'totalPrice' => $in->first()['price'] + $out->first()['price'],
+                        'inbound' => $in->all(),
+                        'outbound' => $out->all(),
+                    ];
+                    $countGroup++;
+                }
+            }
         }
-        return $flights;
+        return $groups;
     }
 
     /**
-     * Ordena os grupos pelo menor preço
+     * Define o formato do retorno da api
      *
+     * @param array $groups
      * @param array $flights
      * @return $flights
      */
-    private function orderByGroups(array $flights)
+    private function setReturnGroups(array $groups, array $flights)
     {
-        $collection = collect($flights['groups']);
-        $sorted = $collection->sortBy(function ($flight, $key) {
-            return $flight['totalPrice'];
-        });
-        $flights['groups'] = $sorted->all();
+        $groups = collect($groups)->sortBy('totalPrice');
+        $groups = $groups->values()->all();
 
-        return $flights;
+        $this->groups['flights'] = $flights['flights'];
+        $this->groups['groups'] = $groups;
+
+        $this->groups['groups']['totalGroups'] = count($groups);
+        $this->groups['groups']['totalFlights'] = count($flights['flights']);
+        $this->groups['groups']['cheapestPrice'] = $groups[0]['totalPrice'];
+        $this->groups['groups']['cheapestGroup'] = $groups[0]['uniqueId'];
     }
 }

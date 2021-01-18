@@ -11,10 +11,7 @@
             "port": 9000,
             "log" : true,
             "stopOnEntry": false,
-            "pathMappings": {
-                //"/var/www/html": "/home/nilberto/docker/Volumes/app/teste_debug"
-                "/app": "/home/nilberto/docker/Volumes/app/book-reviws-api"
-            }
+            "pathMappings": { "/app": "${workspaceRoot}/" },
         },
         {
             "name": "Launch currently open script",
